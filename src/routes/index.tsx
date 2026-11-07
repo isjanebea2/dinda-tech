@@ -147,6 +147,7 @@ function Chat({ profile }: { profile: Profile }) {
   const busy = status === "submitted" || status === "streaming";
 
   useEffect(() => {
+    console.log("dbg", messages.length, status);
     if (messages.length === 0 && status === "ready") {
       sendMessage({ text: `Olá! Meu nome é ${profile.name}.` });
     }
