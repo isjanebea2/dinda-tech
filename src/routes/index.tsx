@@ -147,7 +147,6 @@ function Chat({ profile }: { profile: Profile }) {
   const busy = status === "submitted" || status === "streaming";
 
   useEffect(() => {
-    console.log("dbg", messages.length, status);
     if (messages.length === 0 && status === "ready") {
       sendMessage({ text: `Olá! Meu nome é ${profile.name}.` });
     }
@@ -170,7 +169,8 @@ function Chat({ profile }: { profile: Profile }) {
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex-1 space-y-4 pb-4">
-        {messages.map((m) => {
+        {messages.map((m, i) => {
+          if (i === 0 && m.role === "user") return null;
           const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
           if (!text) return null;
           return m.role === "user" ? (
