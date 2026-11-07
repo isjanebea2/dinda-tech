@@ -187,8 +187,8 @@ function Chat({ profile }: { profile: Profile }) {
               <div className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-magic text-primary-foreground">
                 <WandSparkles className="h-4 w-4" />
               </div>
-              <div className="prose prose-sm max-w-none leading-relaxed [&_p]:my-2">
-                <ReactMarkdown>{text}</ReactMarkdown>
+              <div className="prose prose-sm min-w-0 max-w-none leading-relaxed [&_p]:my-2 [&_p]:whitespace-pre-line">
+                <ReactMarkdown>{text.replace(/[ \t]*\n?[ \t]+(?=[ABC]\))/g, "\n")}</ReactMarkdown>
               </div>
             </div>
           );
