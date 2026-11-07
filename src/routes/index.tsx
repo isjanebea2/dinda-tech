@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Profile = { name: string; email: string; age: number };
+type Profile = { name: string; email: string; age: number; gender: string };
 const PROFILE_KEY = "dinda:profile";
 const MSGS_KEY = "dinda:messages";
 
@@ -29,6 +29,7 @@ const schema = z.object({
   name: z.string().trim().min(1, "Informe seu nome").max(80),
   email: z.string().trim().email("E-mail inválido").max(255),
   age: z.coerce.number().int("Idade inválida").min(1, "Idade inválida").max(120, "Idade inválida"),
+  gender: z.string().trim().min(1, "Informe seu gênero").max(80),
 });
 
 function Index() {
@@ -38,7 +39,10 @@ function Index() {
   useEffect(() => {
     try {
       const p = sessionStorage.getItem(PROFILE_KEY);
-      if (p) setProfile(JSON.parse(p));
+      if (p) {
+        const parsed = schema.safeParse(JSON.parse(p));
+        if (parsed.success && isAgeAllowed(parsed.data.age)) setProfile(parsed.data);
+      }
     } catch {}
     setReady(true);
   }, []);
@@ -73,7 +77,7 @@ function Index() {
 }
 
 function Intro({ onDone }: { onDone: (p: Profile) => void }) {
-  const [form, setForm] = useState({ name: "", email: "", age: "" });
+  const [form, setForm] = useState({ name: "", email: "", age: "", gender: "" });
   const [error, setError] = useState<string | null>(null);
   const [denied, setDenied] = useState<string | null>(null);
 
@@ -107,12 +111,13 @@ function Intro({ onDone }: { onDone: (p: Profile) => void }) {
   return (
     <form onSubmit={submit} className="space-y-4 rounded-3xl bg-card p-8 shadow-soft">
       <div>
-        <h2 className="font-display text-2xl font-bold text-primary">Vamos nos conhecer?</h2>
+        <h2 className="font-display text-2xl font-bold text-primary">Boas-vindas à Dinda Tech!</h2>
         <p className="mt-1 text-sm text-muted-foreground">Conte um pouquinho sobre você para começarmos o quiz.</p>
       </div>
       <input className={field} placeholder="Seu nome" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
       <input className={field} type="email" placeholder="Seu e-mail" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
       <input className={field} type="number" placeholder="Sua idade" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
+      <input className={field} aria-label="Seu gênero" placeholder="Seu gênero" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} maxLength={80} />
       {error && <p className="text-sm text-destructive">{error}</p>}
       <button className="w-full rounded-full bg-magic py-3 font-semibold text-primary-foreground shadow-soft hover:opacity-95">
         Começar ✨
